@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - BlüeBird</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-left {
+            background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-logo img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .login-left h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-left p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .login-right {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            color: #1e293b;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #334155;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #475569;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #2563EB;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #1d4ed8;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+            color: #94a3b8;
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .signup-link a {
+            color: #2563EB;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: #1d4ed8;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .back-home a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .back-home a:hover {
+            color: #2563EB;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .login-left {
+                padding: 2rem;
+            }
+
+            .login-left h1 {
+                font-size: 2rem;
+            }
+
+            .login-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .login-right {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-left">
+            <div class="login-logo">
+                <img src="birdblue.png" alt="BlüeBird Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'font-size:3rem;color:#2563EB\'>🐦</div>'">
+            </div>
+            <h1>BlüeBird</h1>
+            <p>Conectamos tu mundo digital con la mejor tecnología de fibra óptica. Bienvenido de vuelta.</p>
+        </div>
+
+        <div class="login-right">
+            <div class="login-header">
+                <h2>Iniciar Sesión</h2>
+                <p>Ingresa tus credenciales para acceder</p>
+            </div>
+
+            <div class="alert error" id="errorAlert"></div>
+            <div class="alert success" id="successAlert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="tu@email.com" 
+                        required
+                        autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="••••••••" 
+                        required
+                        autocomplete="current-password">
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <span>Recordarme</span>
+                    </label>
+                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn-login">Iniciar Sesión</button>
+
+                <div class="divider">
+                    <span>O</span>
+                </div>
+
+                <div class="signup-link">
+                    ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+                </div>
+
+                <div class="back-home">
+                    <a href="index.html">← Volver al inicio</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Datos de prueba para login
+        const usuarios = {
+            admin: {
+                email: 'admin@bluebird.com',
+                password: 'admin123',
+                tipo: 'admin',
+                nombre: 'Administrador'
+            },
+            cliente: {
+                email: 'cliente@ejemplo.com',
+                password: 'cliente123',
+                tipo: 'cliente',
+                nombre: 'Juan Pérez',
+                contrato: 'BB-2025-001'
+            }
+        };
+
+        const loginForm = document.getElementById('loginForm');
+        const errorAlert = document.getElementById('errorAlert');
+        const successAlert = document.getElementById('successAlert');
+
+        // Función para mostrar alertas
+        function mostrarAlerta(tipo, mensaje) {
+            const alert = tipo === 'error' ? errorAlert : successAlert;
+            alert.textContent = mensaje;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Manejar el envío del formulario
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+
+            // Validar credenciales
+            let usuarioValido = null;
+
+            for (let key in usuarios) {
+                if (usuarios[key].email === email && usuarios[key].password === password) {
+                    usuarioValido = usuarios[key];
+                    break;
+                }
+            }
+
+            if (usuarioValido) {
+                // Guardar sesión
+                const sesion = {
+                    email: usuarioValido.email,
+                    tipo: usuarioValido.tipo,
+                    nombre: usuarioValido.nombre,
+                    contrato: usuarioValido.contrato || null,
+                    timestamp: new Date().getTime()
+                };
+
+                if (remember) {
+                    localStorage.setItem('bluebird_sesion', JSON.stringify(sesion));
+                } else {
+                    sessionStorage.setItem('bluebird_sesion', JSON.stringify(sesion));
+                }
+
+                mostrarAlerta('success', '¡Inicio de sesión exitoso! Redirigiendo...');
+
+                // Redirigir según el tipo de usuario
+                setTimeout(() => {
+                    if (usuarioValido.tipo === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else {
+                        window.location.href = 'cliente-dashboard.html';
+                    }
+                }, 1500);
+
+            } else {
+                mostrarAlerta('error', 'Credenciales incorrectas. Por favor, intenta de nuevo.');
+            }
+        });
+
+        // Verificar si ya hay una sesión activa
+        window.addEventListener('load', function() {
+            const sesion = localStorage.getItem('bluebird_sesion') || sessionStorage.getItem('bluebird_sesion');
+            
+            if (sesion) {
+                const datos = JSON.parse(sesion);
+                mostrarAlerta('success', 'Ya tienes una sesión activa. Redirigiendo...');
+                
+                setTimeout(() => {
+                    if (datos.tipo === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else {
+                        window.location.href = 'cliente-dashboard.html';
+                    }
+                }, 1500);
+            }
+        });
+
+        // Información de credenciales de prueba (solo para desarrollo)
+        console.log('=== CREDENCIALES DE PRUEBA ===');
+        console.log('Administrador:');
+        console.log('  Email: admin@bluebird.com');
+        console.log('  Password: admin123');
+        console.log('');
+        console.log('Cliente:');
+        console.log('  Email: cliente@ejemplo.com');
+        console.log('  Password: cliente123');
+    </script>
+</body>
+</html>

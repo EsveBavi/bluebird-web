@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - BlüeBird</title>
+    <style>
+        /* --- ESTILOS GENERALES Y VARIABLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563EB;
+            --secondary-color: #3B82F6;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR (MENÚ LATERAL) --- */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .sidebar-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.875rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: var(--sidebar-hover);
+            color: white;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .nav-item-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .user-details h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .logout-btn {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .topbar {
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .topbar-left h1 {
+            font-size: 1.75rem;
+            color: var(--text-dark);
+        }
+
+        .topbar-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .date-selector {
+            padding: 0.625rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        /* --- ÁREA DE CONTENIDO Y SECCIONES --- */
+        .content {
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none; /* Ocultar secciones por defecto */
+        }
+        .content-section.active {
+            display: block; /* Mostrar sección activa */
+        }
+
+        /* --- TARJETAS DE ESTADÍSTICAS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.blue { background: #dbeafe; color: var(--primary-color); }
+        .stat-icon.green { background: #d1fae5; color: var(--success-color); }
+        .stat-icon.yellow { background: #fef3c7; color: var(--warning-color); }
+        .stat-icon.red { background: #fee2e2; color: var(--danger-color); }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* --- GRIDS Y TARJETAS GENÉRICAS --- */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow-x: auto; /* Para tablas en móvil */
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-light);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-danger {
+             background: var(--danger-color);
+             color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+
+        /* --- GRÁFICO (SIMULADO CON SVG) Y ALERTAS --- */
+        .chart-container {
+            height: 300px;
+            width: 100%;
+        }
+
+        .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .alert-item {
+            padding: 1rem;
+            border-left: 4px solid;
+            border-radius: 8px;
+            background: var(--bg-light);
+        }
+
+        .alert-item.warning { border-color: var(--warning-color); }
+        .alert-item.danger { border-color: var(--danger-color); }
+        .alert-item.info { border-color: var(--secondary-color); }
+        
+        .alert-item h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+        }
+
+        .alert-item p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* --- TABLAS --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-light);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-badge.activo { background: #d1fae5; color: #065f46; }
+        .status-badge.pendiente { background: #fef3c7; color: #92400e; }
+        .status-badge.vencido { background: #fee2e2; color: #991b1b; }
+        
+        /* --- FORMULARIOS --- */
+        .search-bar {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .form-group input, .form-group select {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none; /* Cambiado por JS */
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-container {
+             transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* --- DISEÑO RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">🐦</div>
+                    <span>BlüeBird</span>
+                </div>
+                <p class="sidebar-subtitle">Panel Administrativo</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="nav-item active" data-section="dashboard">
+                    <span class="nav-item-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a class="nav-item" data-section="clientes">
+                    <span class="nav-item-icon">👥</span>
+                    <span>Clientes</span>
+                </a>
+                <a class="nav-item" data-section="paquetes">
+                    <span class="nav-item-icon">📦</span>
+                    <span>Paquetes</span>
+                </a>
+                <a class="nav-item" data-section="contratos">
+                    <span class="nav-item-icon">📄</span>
+                    <span>Contratos</span>
+                </a>
+                <a class="nav-item" data-section="pagos">
+                    <span class="nav-item-icon">💰</span>
+                    <span>Pagos</span>
+                </a>
+                <a class="nav-item" data-section="tickets">
+                    <span class="nav-item-icon">🎫</span>
+                    <span>Tickets</span>
+                </a>
+                <a class="nav-item" data-section="reportes">
+                    <span class="nav-item-icon">📈</span>
+                    <span>Reportes</span>
+                </a>
+                <a class="nav-item" data-section="configuracion">
+                    <span class="nav-item-icon">⚙️</span>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div class="user-details">
+                        <h4>Administrador</h4>
+                        <p>admin@bluebird.com</p>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">☰</button>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <input type="date" class="date-selector" id="dateSelector">
+                </div>
+            </header>
+
+            <div class="content">
+                
+                <section id="section-dashboard" class="content-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">👥</div>
+                            <div class="stat-info">
+                                <h3 id="stat-clientes">247</h3>
+                                <p>Clientes Activos</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">📄</div>
+                            <div class="stat-info">
+                                <h3 id="stat-contratos">189</h3>
+                                <p>Contratos Vigentes</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon yellow">💰</div>
+                            <div class="stat-info">
+                                <h3 id="stat-pendientes">$48,950</h3>
+                                <p>Pagos Pendientes</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red">🎫</div>
+                            <div class="stat-info">
+                                <h3 id="stat-tickets">23</h3>
+                                <p>Tickets Abiertos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Análisis de Ingresos (Últimos 6 meses)</h2>
+                                <div class="card-actions">
+                                    <button class="btn btn-outline">Mensual</button>
+                                    <button class="btn btn-primary">Anual</button>
+                                </div>
+                            </div>
+                            <div class="chart-container" id="chart-container">
+                                </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><h2>Alertas Importantes</h2></div>
+                            <div class="alerts-list">
+                                <div class="alert-item warning">
+                                    <h4>⚠️ Pagos por Vencer</h4>
+                                    <p>15 contratos vencen en los próximos 5 días</p>
+                                </div>
+                                <div class="alert-item danger">
+                                    <h4>🚨 Pagos Vencidos</h4>
+                                    <p>8 clientes con pagos vencidos mayor a 10 días</p>
+                                </div>
+                                 <div class="alert-item info">
+                                    <h4>📦 Nuevos Paquetes</h4>
+                                    <p>Se ha añadido un nuevo paquete "Gamer Pro"</p>
+                                </div>
+                                <div class="alert-item warning">
+                                    <h4>📞 Tickets Críticos</h4>
+                                    <p>5 tickets marcados como urgentes sin asignar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Contratos Recientes</h2>
+                            <button class="btn btn-primary" id="openModalBtn">+ Nuevo Contrato</button>
+                        </div>
+                        <table id="recent-contracts-table">
+                            <thead>
+                                <tr><th>Cliente</th><th>Paquete</th><th>Fecha Inicio</th><th>Mensualidad</th><th>Estado</th><th>Acciones</th></tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="section-clientes" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                             <h2>Lista de Clientes</h2>
+                             <input type="text" id="clientSearch" class="search-bar" placeholder="Buscar cliente por nombre o email...">
+                        </div>
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Fecha de Registro</th><th>Estado</th></tr>
+                            </thead>
+                            <tbody id="clients-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                 <section id="section-paquetes" class="content-section">
+                     <div class="card">
+                        <div class="card-header">
+                             <h2>Planes y Paquetes de Internet</h2>
+                             <button class="btn btn-primary">+ Nuevo Paquete</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr><th>ID Paquete</th><th>Nombre</th><th>Velocidad</th><th>Precio Mensual</th><th>Descripción</th><th>Acciones</th></tr>
+                            </thead>
+                            <tbody id="packages-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <section id="section-contratos" class="content-section">
+                     <div class="card">
+                        <div class="card-header">
+                             <h2>Todos los Contratos</h2>
+                             <button class="btn btn-primary" id="openModalBtn2">+ Nuevo Contrato</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr><th>ID Contrato</th><th>Cliente</th><th>Paquete</th><th>Fecha Inicio</th><th>Próximo Pago</th><th>Estado</th></tr>
+                            </thead>
+                            <tbody>
+                                 <tr>
+                                    <td>C-001</td>
+                                    <td>Juan Pérez</td>
+                                    <td>Premium 500 Mbps</td>
+                                    <td>15/09/2025</td>
+                                    <td>15/10/2025</td>
+                                    <td><span class="status-badge activo">Activo</span></td>
+                                </tr>
+                                 <tr>
+                                    <td>C-002</td>
+                                    <td>Ana Martínez</td>
+                                    <td>Premium 500 Mbps</td>
+                                    <td>01/08/2025</td>
+                                    <td>01/10/2025</td>
+                                    <td><span class="status-badge vencido">Vencido</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <section id="section-pagos" class="content-section"><div class="card"><h2>Gestión de Pagos</h2><p>Contenido de pagos próximamente...</p></div></section>
+                <section id="section-tickets" class="content-section"><div class="card"><h2>Tickets de Soporte</h2><p>Contenido de tickets próximamente...</p></div></section>
+                <section id="section-reportes" class="content-section"><div class="card"><h2>Reportes y Estadísticas</h2><p>Contenido de reportes próximamente...</p></div></section>
+                <section id="section-configuracion" class="content-section"><div class="card"><h2>Configuración del Sistema</h2><p>Contenido de configuración próximamente...</p></div></section>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="newContractModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Crear Nuevo Contrato</h2>
+                <button class="modal-close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="newContractForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="modalClient">Cliente</label>
+                        <select id="modalClient" required>
+                            </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalPackage">Paquete</label>
+                        <select id="modalPackage" required>
+                           </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalStartDate">Fecha de Inicio</label>
+                        <input type="date" id="modalStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalPrice">Mensualidad ($)</label>
+                        <input type="number" id="modalPrice" placeholder="Ej: 499" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="cancelModalBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Contrato</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // --- MOCK DATA (Simulación de Base de Datos) ---
+        const mockData = {
+            clientes: [
+                { id: 1, nombre: "Juan Pérez", email: "juan.perez@email.com", telefono: "555-1234", fechaRegistro: "2025-09-15", estado: "Activo" },
+                { id: 2, nombre: "María García", email: "maria.garcia@email.com", telefono: "555-5678", fechaRegistro: "2025-09-10", estado: "Activo" },
+                { id: 3, nombre: "Carlos López", email: "carlos.lopez@email.com", telefono: "555-8765", fechaRegistro: "2025-09-05", estado: "Pendiente" },
+                { id: 4, nombre: "Ana Martínez", email: "ana.martinez@email.com", telefono: "555-4321", fechaRegistro: "2025-08-01", estado: "Vencido" },
+                { id: 5, nombre: "Luis Hernández", email: "luis.h@email.com", telefono: "555-9988", fechaRegistro: "2025-07-20", estado: "Activo" },
+            ],
+            paquetes: [
+                { id: "P01", nombre: "Básico 100 Mbps", velocidad: "100 Mbps", precio: 299, desc: "Ideal para navegación y redes sociales." },
+                { id: "P02", nombre: "Premium 500 Mbps", velocidad: "500 Mbps", precio: 499, desc: "Perfecto para streaming 4K y gaming." },
+                { id: "P03", nombre: "Ultra 1 Gbps", velocidad: "1 Gbps", precio: 799, desc: "Máxima velocidad para teletrabajo y múltiples dispositivos." },
+            ],
+            contratos: [
+                { cliente: "Juan Pérez", paquete: "Premium 500 Mbps", fechaInicio: "15/09/2025", mensualidad: 499, estado: "activo" },
+                { cliente: "María García", paquete: "Ultra 1 Gbps", fechaInicio: "10/09/2025", mensualidad: 799, estado: "activo" },
+                { cliente: "Carlos López", paquete: "Básico 100 Mbps", fechaInicio: "05/09/2025", mensualidad: 299, estado: "pendiente" },
+                { cliente: "Ana Martínez", paquete: "Premium 500 Mbps", fechaInicio: "01/08/2025", mensualidad: 499, estado: "vencido" },
+            ]
+        };
+        
+        // --- SELECCIÓN DE ELEMENTOS DEL DOM ---
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const navItems = document.querySelectorAll('.nav-item');
+        const pageTitle = document.getElementById('pageTitle');
+        const contentSections = document.querySelectorAll('.content-section');
+        const dateSelector = document.getElementById('dateSelector');
+        
+        const newContractModal = document.getElementById('newContractModal');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const openModalBtn2 = document.getElementById('openModalBtn2');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const newContractForm = document.getElementById('newContractForm');
+        
+        // --- FUNCIONES DE RENDERIZADO ---
+
+        function renderRecentContracts() {
+            const tableBody = document.getElementById('recent-contracts-table').querySelector('tbody');
+            tableBody.innerHTML = ''; // Limpiar tabla
+            mockData.contratos.slice(0, 4).forEach(c => {
+                const statusClass = c.estado.toLowerCase().replace(' ', '');
+                const statusText = c.estado.charAt(0).toUpperCase() + c.estado.slice(1);
+                const row = `
+                    <tr>
+                        <td>${c.cliente}</td>
+                        <td>${c.paquete}</td>
+                        <td>${c.fechaInicio}</td>
+                        <td>$${c.mensualidad}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td><button class="btn btn-outline">Ver</button></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+        
+        function renderClientes(filter = '') {
+             const tableBody = document.getElementById('clients-table-body');
+             tableBody.innerHTML = '';
+             const filteredClients = mockData.clientes.filter(c => 
+                c.nombre.toLowerCase().includes(filter.toLowerCase()) || 
+                c.email.toLowerCase().includes(filter.toLowerCase())
+             );
+             filteredClients.forEach(c => {
+                 const statusClass = c.estado.toLowerCase().replace(' ', '');
+                 const row = `
+                    <tr>
+                        <td>${c.id}</td>
+                        <td>${c.nombre}</td>
+                        <td>${c.email}</td>
+                        <td>${c.telefono}</td>
+                        <td>${c.fechaRegistro}</td>
+                        <td><span class="status-badge ${statusClass}">${c.estado}</span></td>
+                    </tr>
+                 `;
+                 tableBody.innerHTML += row;
+             });
+        }
+        
+        function renderPaquetes() {
+            const tableBody = document.getElementById('packages-table-body');
+            tableBody.innerHTML = '';
+            mockData.paquetes.forEach(p => {
+                const row = `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td>${p.nombre}</td>
+                        <td>${p.velocidad}</td>
+                        <td>$${p.precio}</td>
+                        <td>${p.desc}</td>
+                        <td><button class="btn btn-outline">Editar</button></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+        
+        function renderChart() {
+            const container = document.getElementById('chart-container');
+            const data = [12000, 19000, 15000, 22000, 18000, 25000]; // Datos de ejemplo
+            const maxVal = Math.max(...data);
+            const barWidth = 100 / data.length;
+            
+            const bars = data.map((value, index) => {
+                const barHeight = (value / maxVal) * 100;
+                return `<div class="bar" style="height: ${barHeight}%; left:${index * barWidth}%; width:${barWidth}%">
+                            <div class="tooltip">$${value.toLocaleString()}</div>
+                        </div>`;
+            }).join('');
+            
+            container.innerHTML = `
+                <style>
+                    .svg-chart { position: relative; width: 100%; height: 100%; background: #f8fafc; border-radius: 8px; }
+                    .svg-chart .bar { position: absolute; bottom: 0; background-color: var(--primary-color); transition: background-color 0.3s; border-top-left-radius: 4px; border-top-right-radius: 4px; }
+                    .svg-chart .bar:hover { background-color: var(--secondary-color); }
+                    .svg-chart .bar .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: var(--text-dark); color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; white-space: nowrap; transition: opacity 0.2s; }
+                    .svg-chart .bar:hover .tooltip { visibility: visible; opacity: 1; }
+                </style>
+                <div class="svg-chart">${bars}</div>
+            `;
+        }
+
+        // --- FUNCIONES DE INTERACTIVIDAD ---
+        
+        function switchSection(sectionId) {
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            const activeSection = document.getElementById(`section-${sectionId}`);
+            if(activeSection) {
+                activeSection.classList.add('active');
+            }
+        }
+        
+        function setupModal() {
+            const modalClientSelect = document.getElementById('modalClient');
+            const modalPackageSelect = document.getElementById('modalPackage');
+            
+            mockData.clientes.forEach(c => {
+                modalClientSelect.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+            mockData.paquetes.forEach(p => {
+                 modalPackageSelect.innerHTML += `<option value="${p.id}" data-price="${p.precio}">${p.nombre}</option>`;
+            });
+
+            modalPackageSelect.addEventListener('change', (e) => {
+                const selectedPrice = e.target.options[e.target.selectedIndex].dataset.price;
+                document.getElementById('modalPrice').value = selectedPrice || '';
+            });
+
+            document.getElementById('modalStartDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function openModal() {
+            newContractModal.classList.add('active');
+        }
+
+        function closeModal() {
+            newContractModal.classList.remove('active');
+            newContractForm.reset();
+             document.getElementById('modalStartDate').value = new Date().toISOString().split('T')[0];
+        }
+
+
+        // --- EVENT LISTENERS ---
+
+        // Autenticación al cargar la página
+        window.addEventListener('load', function() {
+            const sesion = localStorage.getItem('bluebird_sesion') || sessionStorage.getItem('bluebird_sesion');
+            
+            if (!sesion) {
+                // Para demostración, creamos una sesión si no existe
+                const fakeSession = { tipo: 'admin', nombre: 'Admin Demo', email: 'admin@bluebird.com' };
+                localStorage.setItem('bluebird_sesion', JSON.stringify(fakeSession));
+                location.reload();
+                // En un caso real: window.location.href = 'login.html';
+                return;
+            }
+
+            const datos = JSON.parse(sesion);
+            if (datos.tipo !== 'admin') {
+                alert('Acceso denegado. No eres administrador.');
+                // En un caso real: window.location.href = 'cliente-dashboard.html';
+                return;
+            }
+
+            document.querySelector('.user-details h4').textContent = datos.nombre;
+            document.querySelector('.user-details p').textContent = datos.email;
+            document.querySelector('.user-avatar').textContent = datos.nombre.charAt(0).toUpperCase();
+        });
+
+        // Toggle del menú lateral en móvil
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+
+        // Navegación entre secciones
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+
+                const section = this.dataset.section;
+                const sectionName = this.querySelector('span:last-child').textContent.trim();
+                pageTitle.textContent = sectionName;
+
+                switchSection(section);
+                
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
+        // Búsqueda de clientes
+        document.getElementById('clientSearch').addEventListener('keyup', function(e) {
+            renderClientes(e.target.value);
+        });
+
+        // Lógica del Modal
+        openModalBtn.addEventListener('click', openModal);
+        openModalBtn2.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+        newContractModal.addEventListener('click', function(e) {
+            if (e.target === newContractModal) closeModal();
+        });
+        
+        newContractForm.addEventListener('submit', function(e){
+            e.preventDefault();
+            alert('Nuevo contrato guardado (simulación). ¡Revisa la consola para ver los datos!');
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+             data.clienteNombre = document.getElementById('modalClient').options[document.getElementById('modalClient').selectedIndex].text;
+            data.paqueteNombre = document.getElementById('modalPackage').options[document.getElementById('modalPackage').selectedIndex].text;
+            console.log("Datos del nuevo contrato:", data);
+            closeModal();
+        });
+
+
+        // --- INICIALIZACIÓN ---
+        
+        // Establecer fecha actual en el selector
+        dateSelector.value = new Date().toISOString().split('T')[0];
+
+        // Renderizar contenido inicial
+        renderRecentContracts();
+        renderClientes();
+        renderPaquetes();
+        renderChart();
+        setupModal();
+    });
+    
+    // Función global para cerrar sesión
+    function cerrarSesion() {
+        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+            localStorage.removeItem('bluebird_sesion');
+            sessionStorage.removeItem('bluebird_sesion');
+            alert("Sesión cerrada. Serás redirigido al login.");
+            // En un caso real: window.location.href = 'login.html';
+            // Para la demo, simplemente recargamos para que se cree la sesión falsa de nuevo.
+            location.reload();
+        }
+    }
+    </script>
+</body>
+</html>
