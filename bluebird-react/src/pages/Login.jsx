@@ -18,21 +18,22 @@ function Login() {
     setError('');
     setLoading(true);
 
-    const result = login(email, password, remember);
+    // Pequeña pausa para simular procesamiento
+    setTimeout(() => {
+      const result = login(email, password, remember);
 
-    if (result.success) {
-      // Redirigir según tipo de usuario
-      setTimeout(() => {
+      if (result.success) {
+        // Redirigir según tipo de usuario
         if (result.user.tipo === 'admin') {
           navigate('/admin');
         } else {
           navigate('/cliente');
         }
-      }, 500);
-    } else {
-      setError(result.error);
-      setLoading(false);
-    }
+      } else {
+        setError(result.error);
+        setLoading(false);
+      }
+    }, 500);
   };
 
   return (
@@ -53,7 +54,8 @@ function Login() {
 
         {error && (
           <div className="alert alert-error">
-            {error}
+            <span className="alert-icon">⚠️</span>
+            <span>{error}</span>
           </div>
         )}
 
@@ -68,6 +70,7 @@ function Login() {
               placeholder="tu@email.com"
               required
               autoComplete="email"
+              disabled={loading}
             />
           </div>
 
@@ -81,6 +84,7 @@ function Login() {
               placeholder="••••••••"
               required
               autoComplete="current-password"
+              disabled={loading}
             />
           </div>
 
@@ -90,6 +94,7 @@ function Login() {
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
+                disabled={loading}
               />
               <span>Recordarme</span>
             </label>
@@ -97,7 +102,14 @@ function Login() {
           </div>
 
           <button type="submit" className="btn-login" disabled={loading}>
-            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+            {loading ? (
+              <>
+                <span className="spinner-mini"></span>
+                Iniciando sesión...
+              </>
+            ) : (
+              'Iniciar Sesión'
+            )}
           </button>
 
           <div className="divider">
@@ -114,10 +126,16 @@ function Login() {
         </form>
 
         <div className="credentials-info">
-          <p><strong>Credenciales de prueba:</strong></p>
+          <p><strong>📋 Credenciales de prueba:</strong></p>
           <div className="credentials-box">
-            <p><strong>Admin:</strong> admin@bluebird.com / admin123</p>
-            <p><strong>Cliente:</strong> cliente@ejemplo.com / cliente123</p>
+            <div className="credential-item">
+              <span className="credential-label">👨‍💼 Admin:</span>
+              <span className="credential-value">admin@bluebird.com / admin123</span>
+            </div>
+            <div className="credential-item">
+              <span className="credential-label">👤 Cliente:</span>
+              <span className="credential-value">cliente@ejemplo.com / cliente123</span>
+            </div>
           </div>
         </div>
       </div>
